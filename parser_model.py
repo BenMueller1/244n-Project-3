@@ -47,6 +47,20 @@ class ParserModel(nn.Module):
         self.embed_size = embeddings.shape[1]
         self.hidden_size = hidden_size
         self.embeddings = nn.Parameter(torch.tensor(embeddings))
+        
+        self.embed_to_hidden_weight = nn.parameter.Parameter(data=torch.zeros(self.hidden_size, self.embed_size), requires_grad=True) # this should be hidden_size (output) X embed_size (input)
+        self.embed_to_hidden_bias = nn.parameter.Parameter(data=torch.zeros(self.hidden_size, 1), requires_grad=True)
+
+        nn.init.xavier_uniform_(self.embed_to_hidden_weight)
+        nn.init.uniform_(self.embed_to_hidden_bias)
+
+        self.dropout = torch.nn.Dropout(self.dropout_prob)
+
+        self.hidden_to_logits_weight = nn.parameter.Parameter(data=torch.zeros(self.n_classes, self.hidden_size), requires_grad=True)
+        self.hidden_to_logits_bias = nn.parameter.Parameter(data=torch.zeros(self.n_classes, 1), requires_grad=True)
+
+        nn.init.xavier_uniform_(self.hidden_to_logits_weight)
+        nn.init.uniform_(self.hidden_to_logits_bias)
 
         ### YOUR CODE HERE (~9-10 Lines)
         ### TODO:
@@ -72,10 +86,6 @@ class ParserModel(nn.Module):
         ###     Dropout: https://pytorch.org/docs/stable/nn.html#dropout-layers
         ### 
         ### See the PDF for hints.
-
-
-
-
         ### END YOUR CODE
 
     def embedding_lookup(self, w):

@@ -18,6 +18,9 @@ class PartialParse(object):
         """
         # The sentence being parsed is kept for bookkeeping purposes. Do NOT alter it in your code.
         self.sentence = sentence
+        self.stack = ["ROOT"]
+        self.buffer = [word for word in sentence]
+        self.dependencies = [] # this will be a list of tuples of the form (head, dependent)
 
         ### YOUR CODE HERE (3 Lines)
         ### Your code should initialize the following fields:
