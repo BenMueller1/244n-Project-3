@@ -99,6 +99,26 @@ def minibatch_parse(sentences, model, batch_size):
     """
     dependencies = []
 
+    partial_parses = [PartialParse(sentence) for sentence in sentences]
+    unfinished_parses = partial_parses[:]
+    while unfinished_parses:
+        batch = unfinished_parses[:min(len(unfinished_parses), batch_size)]
+        transitions = model.predict(batch)
+        for i, unfinished_parse in enumerate(batch):
+            unfinished_parse.parse_step(transitions[i])
+        # now remove finished parses
+        ind = 0
+        while ind < len(unfinished_parses):
+            parse = unfinished_parses[ind]
+            if len(parse.buffer) == 0 and len(parse.stack) == 1:
+                unfinished_parses.pop(ind)
+            else:
+                ind += 1
+                
+    for parse in partial_parses:
+        dependencies.append(parse.dependencies)
+    return dependencies
+
     ### YOUR CODE HERE (~8-10 Lines)
     ### TODO:
     ###     Implement the minibatch parse algorithm.  Note that the pseudocode for this algorithm is given in the pdf handout.
