@@ -51,9 +51,10 @@ def train(parser, train_data, dev_data, output_path, batch_size=1024, n_epochs=1
     ###       necessary parameters to tune.
     ### Please see the following docs for support:
     ###     Adam Optimizer: https://pytorch.org/docs/stable/optim.html
-    ###     Cross Entropy Loss: https://pytorch.org/docs/stable/nn.html#crossentropyloss
-
-
+    ###     Cross Entropy Loss: https://pytorch.org/docs/stable/nn.html#
+    
+    optimizer = optim.Adam(parser.parameters())
+    loss_func = nn.BCELoss(reduction='mean')
 
     ### END YOUR CODE
 
@@ -70,6 +71,7 @@ def train(parser, train_data, dev_data, output_path, batch_size=1024, n_epochs=1
 def train_for_epoch(parser, train_data, dev_data, optimizer, loss_func, batch_size):
     """ Train the neural dependency parser for single epoch.
 
+    # NOTE THIS:
     Note: In PyTorch we can signify train versus test and automatically have
     the Dropout Layer applied and removed, accordingly, by specifying
     whether we are training, `model.train()`, or evaluating, `model.eval()`
@@ -106,8 +108,10 @@ def train_for_epoch(parser, train_data, dev_data, optimizer, loss_func, batch_si
             ### Please see the following docs for support:
             ###     Optimizer Step: https://pytorch.org/docs/stable/optim.html#optimizer-step
 
-
-
+            logits = parser(train_x)
+            loss = loss_func(logits, train_y)
+            loss.backward()
+            optimizer.step()
 
             ### END YOUR CODE
             prog.update(1)
