@@ -117,7 +117,7 @@ class ParserModel(nn.Module):
         ###     View: https://pytorch.org/docs/stable/tensors.html#torch.Tensor.view
         ###     Flatten: https://pytorch.org/docs/stable/generated/torch.flatten.html
 
-        batch_size = w.size(dim=0)
+        batch_size = w.size()[0]
         x = torch.index_select(self.embeddings, 0, w.view(-1))
         x = x.view(batch_size, -1)
         ### END YOUR CODE
@@ -159,8 +159,8 @@ class ParserModel(nn.Module):
         relu = torch.nn.ReLU()
         h = relu(torch.matmul(x, self.embed_to_hidden_weight) + self.embed_to_hidden_bias)
         d = self.dropout(h)
+        # d is 1024 x 200, hidden_to_logits_weight is 200x3, hidden_to_logits_bias is 3x1 ???
         logits = torch.matmul(d, self.hidden_to_logits_weight) + self.hidden_to_logits_bias
-
         ### END YOUR CODE
         return logits
 
